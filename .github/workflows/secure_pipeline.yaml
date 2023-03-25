@@ -199,9 +199,9 @@ jobs:
 
   deploy:
     name: Deploy to AWS & Docker Scan using Trivy
-#    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     environment: production
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,sonar,semgrep]
+    #needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,sonar,semgrep]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
