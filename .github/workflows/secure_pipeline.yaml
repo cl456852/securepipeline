@@ -286,6 +286,7 @@ jobs:
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
 
+
   nuclei-scan:
     name: DAST Scan using Nuclei
     needs: [zap_scan]
