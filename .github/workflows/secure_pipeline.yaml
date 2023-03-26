@@ -12,7 +12,7 @@ env:
   CONTAINER_NAME: sample-app           # set this to the name of the container in the
   AZURE_WEBAPP_NAME: app2727
   DEPLOYMENT_PLATFORM: aws # 1 for AWS, 2 for Azure, 3 for Google Cloud
-  DAY_OF_WEEK: Monday
+
 jobs:
 
 
@@ -202,7 +202,8 @@ jobs:
 
   deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
-    if: ${{ env.DAY_OF_WEEK == 'Monday' }}
+    env.DEPLOYMENT_PLATFORM == 'aws'
+    #if: ${{ env.DAY_OF_WEEK == 'Monday' }}
     #if: ${{ env.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
