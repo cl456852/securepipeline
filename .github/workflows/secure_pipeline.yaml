@@ -272,7 +272,7 @@ jobs:
           wait-for-service-stability: true
   
   build-and-push-to-ghcr:
-    if: env.DEPLOYMENT_PLATFORM == '2' # Azure
+    if: ${{ env.DEPLOYMENT_PLATFORM } == '2' # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
