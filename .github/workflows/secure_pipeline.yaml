@@ -268,23 +268,23 @@ jobs:
           wait-for-service-stability: true
 
 
-#  zap_scan:
-#    runs-on: ubuntu-latest
-#    name: DAST Scan using ZAP
-#    needs: [deploy]
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          ref: master
-#      - name: ZAP Scan
-#        uses: zaproxy/action-baseline@v0.6.1
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          docker_name: 'owasp/zap2docker-stable'
-#          target: 'http://ecsloadbalancer-1835225366.us-west-2.elb.amazonaws.com/jpetstore' # Change URL or IP of your target application
-#          rules_file_name: '.zap/rules.tsv'
-#          cmd_options: '-a'
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: DAST Scan using ZAP
+    needs: [deploy]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.6.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'owasp/zap2docker-stable'
+          target: 'http://ecsloadbalancer-1835225366.us-west-2.elb.amazonaws.com/jpetstore' # Change URL or IP of your target application
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
 
 
   nuclei-scan:
