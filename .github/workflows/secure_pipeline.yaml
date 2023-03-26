@@ -12,7 +12,7 @@ env:
   CONTAINER_NAME: sample-app           # set this to the name of the container in the
   AZURE_WEBAPP_NAME: app2727
   DEPLOYMENT_PLATFORM: aws # 1 for AWS, 2 for Azure, 3 for Google Cloud
-
+  DAY_OF_WEEK: Monday
 jobs:
 
 
@@ -202,7 +202,8 @@ jobs:
 
   deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
-    if: ${{ env.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
+    if: ${{ env.DAY_OF_WEEK == 'Monday' }}
+    #if: ${{ env.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
@@ -272,7 +273,7 @@ jobs:
           wait-for-service-stability: true
   
   build-and-push-to-ghcr:
-    if: ${{ env.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
+    #if: ${{ env.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
