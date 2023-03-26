@@ -11,6 +11,7 @@ env:
   # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: sample-app           # set this to the name of the container in the
   AZURE_WEBAPP_NAME: app2727
+  DEPLOYMENT_PLATFORM: '2' # 1 for AWS, 2 for Azure, 3 for Google Cloud
 
 jobs:
 
@@ -201,6 +202,7 @@ jobs:
 
   deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
+    if: env.DEPLOYMENT_PLATFORM == '1' # AWS
     runs-on: ubuntu-latest
     environment: production
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
@@ -270,8 +272,10 @@ jobs:
           wait-for-service-stability: true
   
   build-and-push-to-ghcr:
+    if: env.DEPLOYMENT_PLATFORM == '2' # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
     steps:
       - uses: actions/checkout@v3
 
@@ -322,7 +326,8 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     name: DAST Scan using ZAP
-    needs: [deploy-to-aws]
+    if: ${{ always() }}
+    needs: [deploy-to-aws, deploy-to-azure-web-app]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
