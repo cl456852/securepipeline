@@ -201,9 +201,9 @@ jobs:
         if: always()
 
   deploy-to-aws:
-    name: Deploy to AWS & Docker Scan using Trivy
-    env.DEPLOYMENT_PLATFORM == 'aws'
-    #if: ${{ env.DAY_OF_WEEK == 'Monday' }}
+    #name: Deploy to AWS & Docker Scan using Trivy
+    
+    name: ${{ env.DEPLOYMENT_PLATFORM }}
     #if: ${{ env.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
