@@ -246,10 +246,10 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: 'trivy-results.sarif'
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
@@ -282,7 +282,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'owasp/zap2docker-stable'
-          target: 'http://ecsloadbalancer-1600554619.us-west-2.elb.amazonaws.com/jpetstore/' # Change URL or IP of your target application
+          target: 'http://ecsloadbalancer-1835225366.us-west-2.elb.amazonaws.com/jpetstore' # Change URL or IP of your target application
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
 
@@ -308,7 +308,7 @@ jobs:
         uses: projectdiscovery/nuclei-action@main
         with:
           # templates: 'https://github.com/projectdiscovery/nuclei-templates/blob/74c4049363a703a44c72814d80db9050fa4ebb38/cnvd/2022/CNVD-2022-03672.yaml'
-          target: 'http://ecsloadbalancer-1600554619.us-west-2.elb.amazonaws.com/jpetstore'
+          target: 'http://ecsloadbalancer-1835225366.us-west-2.elb.amazonaws.com/jpetstore'
           sarif-export: results.sarif
 
       - name: GitHub Security Dashboard Alerts update
