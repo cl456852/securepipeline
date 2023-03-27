@@ -202,7 +202,7 @@ jobs:
 
   deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
-    if: ${{ var.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
+    if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
@@ -272,7 +272,7 @@ jobs:
           wait-for-service-stability: true
   
   build-and-push-to-ghcr:
-    if: ${{ var.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
+    if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
