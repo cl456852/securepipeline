@@ -344,8 +344,8 @@ jobs:
       - name: Build Docker image
         id: build-image
         run: |
-        docker build . -t $IMAGE_NAME
-        echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          docker build . -t $IMAGE_NAME
+          echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
