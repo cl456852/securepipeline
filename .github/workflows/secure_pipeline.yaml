@@ -81,7 +81,7 @@ jobs:
 
 #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   ShiftLeft:
-    name: Perform Scan
+  - name: Perform Scan
     uses: ShiftLeftSecurity/scan-action@master
     with:
       type: "credscan,python"
