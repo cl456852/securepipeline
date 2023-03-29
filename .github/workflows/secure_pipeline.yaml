@@ -31,6 +31,7 @@ jobs:
   #       uses: github/codeql-action/analyze@v2
 
   GitGuardian:
+  # 54eFC9C4dde4E258c2d485851c44eBeff1fbFD2EF2d3c89CAFc425eC95fd56e17bbAA50
       name: GitGuardian scan
       runs-on: ubuntu-latest
       steps:
