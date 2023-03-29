@@ -85,22 +85,30 @@ jobs:
 
 
   #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
-  shift-left:
+  # shift-left:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Perform Scan
+  #       uses: ShiftLeftSecurity/scan-action@master
+  #       with:
+  #         type: "credscan,python"
+  #       env:
+  #         WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: actions/upload-artifact@v1
+  #       with:
+  #         name: reports
+  #         path: reports
+
+#https://github.com/fossas/fossa-action
+  fossa-scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Perform Scan
-        uses: ShiftLeftSecurity/scan-action@master
+      - uses: actions/checkout@v3
+      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
         with:
-          type: "credscan,python"
-        env:
-          WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v1
-        with:
-          name: reports
-          path: reports
-
-
+          api-key: ${{secrets.fossaApiKey}}
+          run-tests: true
 
 #  GitGuardian:
 #     name: GitGuardian scan
