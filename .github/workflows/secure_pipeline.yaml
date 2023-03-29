@@ -58,61 +58,61 @@ jobs:
 #          scanMetadataReportFile: target/sonar/report-task.txt
 
 
-  gitleaks:
-    name: Secret Scan using Gitleaks
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#CodeQL test - Shaolun
-  CodeQL-Build:
-    runs-on: ubuntu-latest
-    permissions:
-
-      security-events: write
-
-      actions: read
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          language: javascript
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-
-#GitGuardian Test - Shaolun
-  GitGuardian:
-      name: GitGuardian scan
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0 # fetch all history so multiple commits can be scanned
-        - name: GitGuardian scan
-          uses: GitGuardian/ggshield-action@master
-          with:
-            args: -v --all-policies
-          env:
-            GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-            GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
-            GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-            GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-            GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+#  gitleaks:
+#    name: Secret Scan using Gitleaks
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      - uses: gitleaks/gitleaks-action@v2
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+##CodeQL test - Shaolun
+#  CodeQL-Build:
+#    runs-on: ubuntu-latest
+#    permissions:
+#
+#      security-events: write
+#
+#      actions: read
+#      contents: read
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v2
+#        with:
+#          language: javascript
+#
+#      - name: Autobuild
+#        uses: github/codeql-action/autobuild@v2
+#
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v2
+#
+##GitGuardian Test - Shaolun
+#  GitGuardian:
+#      name: GitGuardian scan
+#      runs-on: ubuntu-latest
+#      steps:
+#        - name: Checkout
+#          uses: actions/checkout@v2
+#          with:
+#            fetch-depth: 0 # fetch all history so multiple commits can be scanned
+#        - name: GitGuardian scan
+#          uses: GitGuardian/ggshield-action@master
+#          with:
+#            args: -v --all-policies
+#          env:
+#            GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+#            GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+#            GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+#            GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+#            GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 #
 ##ShiftLeft Test - Shaolun
 ##https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
@@ -157,170 +157,201 @@ jobs:
 ##Fortify Test - Shaolun
 ##
 #
-  snykScan:
-    name: SCA Scan using Snyk
+#  snykScan:
+#    name: SCA Scan using Snyk
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#      - name: Set up Maven
+#        run: mvn -N io.takari:maven:wrapper -Dmaven=3.8.2
+#      - name: Run Snyk to check for vulnerabilities
+#        continue-on-error: true
+#        uses: snyk/actions/maven-3-jdk-11@master
+#        env:
+#          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+#        with:
+#          args: --sarif-file-output=snyk.sarif
+#      - name: Upload result to GitHub Code Scanning
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: snyk.sarif
+#
+#  semgrep:
+#    permissions: write-all
+#    name: SAST Scan using Semgrep
+#    runs-on: ubuntu-latest
+#
+#    container:
+#      image: returntocorp/semgrep
+#
+#    if: (github.actor != 'dependabot[bot]')
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#      - run: semgrep ci --sarif --output=semgrep.sarif
+#        env:
+#           SEMGREP_RULES: p/default
+#      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: semgrep.sarif
+#        if: always()
+#
+#  deploy-to-aws:
+#    name: Deploy to AWS & Docker Scan using Trivy
+#    if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
+#    runs-on: ubuntu-latest
+#    environment: production
+#    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ env.AWS_REGION }}
+#
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
+#
+#      - name: Build, tag, and push image to Amazon ECR
+#        id: build-image
+#        env:
+#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#          IMAGE_TAG: ${{ github.sha }}
+#        run: |
+#          # Build a docker container and
+#          # push it to ECR so that it can
+#          # be deployed to ECS.
+#          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+#          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+#
+##            - name: Scan Docker image
+##              id: docker-scan
+##              uses: alexjurkiewicz/ecr-scan-image@v1.7.0
+##              with:
+##                repository: ${{ env.ECR_REPOSITORY }}
+##                tag: ${{ steps.build-image.outputs.tag }}
+##                fail_threshold: high
+#
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@master
+#        with:
+#          image-ref: ${{ steps.build-image.outputs.image }}
+#          format: 'sarif'
+#          output: 'trivy-results.sarif'
+#
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: 'trivy-results.sarif'
+#
+#      - name: Fill in the new image ID in the Amazon ECS task definition
+#        id: task-def
+#        uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
+#        with:
+#          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+#          container-name: ${{ env.CONTAINER_NAME }}
+#          image: ${{ steps.build-image.outputs.image }}
+#
+#      - name: Deploy Amazon ECS task definition
+#        uses: aws-actions/amazon-ecs-deploy-task-definition@3cc43061dd30ad47511af35bca46e2c1435b9035
+#        with:
+#          task-definition: ${{ steps.task-def.outputs.task-definition }}
+#          service: ${{ env.ECS_SERVICE }}
+#          cluster: ${{ env.ECS_CLUSTER }}
+#          wait-for-service-stability: true
+#
+#  build-and-push-to-ghcr:
+#    if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
+#    runs-on: ubuntu-latest
+#    name: Build and push docker image to ghcr
+#    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+#
+#      - name: Log in to GitHub container registry
+#        uses: docker/login-action@v1.10.0
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Lowercase the repo name
+#        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+#
+#      - name: Build and push container image to registry
+#        uses: docker/build-push-action@v2
+#        with:
+#          push: true
+#          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+#          file: ./Dockerfile
+#
+#  deploy-to-azure-web-app:
+#    runs-on: ubuntu-latest
+#    name: Deploy container to Azure Web App
+#    needs: build-and-push-to-ghcr
+#
+#    environment:
+#      name: 'production'
+#      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+#
+#    steps:
+#      - name: Lowercase the repo name
+#        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+#
+#      - name: Deploy to Azure Web App
+#        id: deploy-to-webapp
+#        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
+#        with:
+#          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+#          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+#          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+
+  google cloud deploy:
+
+    name: Setup Gcloud Account
     runs-on: ubuntu-latest
-
+    env:
+      IMAGE_NAME: gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_APP_NAME }}
     steps:
-      - uses: actions/checkout@v2
+
+      - name: Login
+        uses: google-github-actions/setup-gcloud@v0
         with:
-          fetch-depth: 0
-      - name: Set up Maven
-        run: mvn -N io.takari:maven:wrapper -Dmaven=3.8.2
-      - name: Run Snyk to check for vulnerabilities
-        continue-on-error: true
-        uses: snyk/actions/maven-3-jdk-11@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --sarif-file-output=snyk.sarif
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          service_account_email: ${{ vars.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
-  semgrep:
-    permissions: write-all
-    name: SAST Scan using Semgrep
-    runs-on: ubuntu-latest
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
 
-    container:
-      image: returntocorp/semgrep
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    if: (github.actor != 'dependabot[bot]')
+      - name: Build Docker image
+        run: docker build . -t $IMAGE_NAME
 
-    steps:
-      - uses: actions/checkout@v3
-      - run: semgrep ci --sarif --output=semgrep.sarif
-        env:
-           SEMGREP_RULES: p/default
-      - name: Upload SARIF file for GitHub Advanced Security Dashboard
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: semgrep.sarif
-        if: always()
+      - name: Test Docker image
+        run: docker run $IMAGE_NAME sh -c "go test -v"
 
-  deploy-to-aws:
-    name: Deploy to AWS & Docker Scan using Trivy
-    if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
-    runs-on: ubuntu-latest
-    environment: production
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-#            - name: Scan Docker image
-#              id: docker-scan
-#              uses: alexjurkiewicz/ecr-scan-image@v1.7.0
-#              with:
-#                repository: ${{ env.ECR_REPOSITORY }}
-#                tag: ${{ steps.build-image.outputs.tag }}
-#                fail_threshold: high
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.build-image.outputs.image }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@3cc43061dd30ad47511af35bca46e2c1435b9035
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
-  
-  build-and-push-to-ghcr:
-    if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
-    runs-on: ubuntu-latest
-    name: Build and push docker image to ghcr
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to GitHub container registry
-        uses: docker/login-action@v1.10.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Lowercase the repo name
-        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-      - name: Build and push container image to registry
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
-          file: ./Dockerfile
-
-  deploy-to-azure-web-app:
-    runs-on: ubuntu-latest
-    name: Deploy container to Azure Web App
-    needs: build-and-push-to-ghcr
-
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Lowercase the repo name
-        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
-
-    
+      - name: Deploy Docker image
+        run: gcloud run deploy ${{ vars.GCP_PROJECT_ID }} --image $IMAGE_NAME --region us-central1 --platform managed
 
 
   zap_scan:
