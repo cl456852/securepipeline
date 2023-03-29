@@ -1,7 +1,7 @@
 name: DevSecOps Pipeline
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "allen" ]
 env:
   AWS_REGION: us-west-2                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: jpetstore           # set this to your Amazon ECR repository name
