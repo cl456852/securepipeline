@@ -107,8 +107,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
         with:
-          # api-key: ${{secrets.fossaApiKey}}
-          api-key: ${{secrets.default}}
+          api-key: ${{secrets.fossaApiKey}}
+          # api-key: ${{secrets.default}}
           run-tests: true
 
 #  GitGuardian:
