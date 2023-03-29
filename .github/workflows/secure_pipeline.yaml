@@ -83,7 +83,7 @@ jobs:
   #         name: nuclei.log
   #         path: nuclei.log
 
-  ShiftLeft:
+  Shift Left:
     name: Perform Scan
     uses: ShiftLeftSecurity/scan-action@master
     with:
@@ -91,7 +91,7 @@ jobs:
     env:
       WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  - uses: actions/upload-artifact@v1
+    uses: actions/upload-artifact@v1
     with:
       name: reports
       path: reports
