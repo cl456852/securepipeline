@@ -320,7 +320,7 @@ jobs:
 #          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 #          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
 
-  google cloud deploy:
+  google-cloud-deploy:
 
     name: Setup Gcloud Account
     runs-on: ubuntu-latest
