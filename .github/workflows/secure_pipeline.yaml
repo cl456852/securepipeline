@@ -117,7 +117,7 @@ jobs:
 #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   ShiftLeft:
   - name: Perform Scan
-    uses: ShiftLeftSecurity/scan-action@master
+    uses: ShiftLeftSecurity/scan-action@allen
     with:
       type: "credscan,python"
     env:
