@@ -86,6 +86,7 @@ jobs:
 
   #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   Shift Left:
+    runs-on: ubuntu-latest
     steps:
       - name: Perform Scan
         uses: ShiftLeftSecurity/scan-action@master
