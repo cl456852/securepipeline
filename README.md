@@ -5,6 +5,7 @@ MyBatis JPetStore
 [![Container Support](https://github.com/mybatis/jpetstore-6/actions/workflows/support.yaml/badge.svg)](https://github.com/mybatis/jpetstore-6/actions/workflows/support.yaml)
 [![Coverage Status](https://coveralls.io/repos/github/mybatis/jpetstore-6/badge.svg?branch=master)](https://coveralls.io/github/mybatis/jpetstore-6?branch=master)
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcl456852%2Fsecurepipeline.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcl456852%2Fsecurepipeline?ref=badge_shield)
 
 ![mybatis-jpetstore](https://mybatis.org/images/mybatis-logo.png)
 
@@ -82,3 +83,7 @@ Perform integration tests for screen transition.
 ```
 $ ./mvnw clean verify -P tomcat90
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcl456852%2Fsecurepipeline.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcl456852%2Fsecurepipeline?ref=badge_large)
