@@ -324,6 +324,7 @@ jobs:
 
   google-cloud-deploy:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
     name: Setup Gcloud Account
     runs-on: ubuntu-latest
     env:
