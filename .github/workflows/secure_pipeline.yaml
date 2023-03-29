@@ -91,10 +91,11 @@ jobs:
     env:
       WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    uses: actions/upload-artifact@v1
-    with:
-      name: reports
-      path: reports
+    steps:
+      uses: actions/upload-artifact@v1
+      with:
+        name: reports
+        path: reports
 
 
 #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
