@@ -116,7 +116,7 @@ jobs:
 #ShiftLeft Test - Shaolun
 #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   ShiftLeft:
-  - name: Perform Scan
+    name: Perform Scan
     uses: ShiftLeftSecurity/scan-action@allen
     with:
       type: "credscan,python"
