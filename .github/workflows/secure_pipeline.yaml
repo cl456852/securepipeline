@@ -11,11 +11,17 @@ env:
   # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: sample-app           # set this to the name of the container in the
 jobs:
+<<<<<<< Updated upstream
 
 
   # sonar:
   #   name: Inspect - Using Sonar
   #   runs-on: ubuntu-latest
+=======
+  sonar:
+    name: Inspect - Using Sonar
+    runs-on: ubuntu-latest
+>>>>>>> Stashed changes
 #    needs: [ test ]
 
 #     steps:
@@ -114,8 +120,13 @@ jobs:
 #ShiftLeft Test - Shaolun
 #https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   ShiftLeft:
+<<<<<<< Updated upstream
     name: Perform Scan
     uses: ShiftLeftSecurity/scan-action@allen
+=======
+  - name: Perform Scan
+    uses: ShiftLeftSecurity/scan-action@master
+>>>>>>> Stashed changes
     with:
       type: "credscan,python"
     env:
