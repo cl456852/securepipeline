@@ -83,7 +83,6 @@ jobs:
   #         name: nuclei.log
   #         path: nuclei.log
 
-#https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   ShiftLeft:
     name: Perform Scan
     uses: ShiftLeftSecurity/scan-action@master
@@ -98,6 +97,7 @@ jobs:
       path: reports
 
 
+#https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
 
 
 
