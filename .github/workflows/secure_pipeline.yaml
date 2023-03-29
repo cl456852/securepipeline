@@ -31,7 +31,7 @@ jobs:
   #       uses: github/codeql-action/analyze@v2
   nuclei-scan:
     name: DAST Scan using Nuclei
-    needs: [zap_scan]
+    # needs: [zap_scan]
     runs-on: ubuntu-latest
     # needs: [upload_file]
     steps:
