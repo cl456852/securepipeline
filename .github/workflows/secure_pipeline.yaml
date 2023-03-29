@@ -322,7 +322,7 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
 
-  google-cloud-deploy:
+  deploy-to-google-cloud:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
     name: Setup Gcloud Account
@@ -373,7 +373,7 @@ jobs:
     runs-on: ubuntu-latest
     name: DAST Scan using ZAP
     if: ${{ always() }}
-    needs: [deploy-to-aws, deploy-to-azure-web-app]
+    needs: [deploy-to-aws, deploy-to-azure-web-app, deploy-to-google-cloud]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
