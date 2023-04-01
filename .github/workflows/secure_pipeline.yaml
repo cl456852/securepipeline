@@ -102,49 +102,43 @@ jobs:
             GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
             GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
-##ShiftLeft Test - Shaolun
-##https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
-#  ShiftLeft:
-#  - name: Perform Scan
-#    uses: ShiftLeftSecurity/scan-action@master
-#    with:
-#      type: "credscan,python"
-#    env:
-#      WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
-#      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#  - uses: actions/upload-artifact@v1
-#    with:
-#      name: reports
-#      path: reports
-#
-#
-##FOSSA Test - Shaolun
-##https://github.com/fossas/fossa-action
-#  fossa-scan:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
-#        with:
-#          api-key: ${{secrets.fossaApiKey}}
-#          run-tests: true
-#
-##Renovate Test - Shaolun
-##https://github.com/renovatebot/github-action
-#  renovate:
-#      runs-on: ubuntu-latest
-#      steps:
-#        - name: Checkout
-#          uses: actions/checkout@v3.3.0
-#        - name: Self-hosted Renovate
-#          uses: renovatebot/github-action@v36.0.0
-#          with:
-#            renovate-version: 35.0.0
-#            token: ${{ secrets.RENOVATE_TOKEN }}
-#
-##Fortify Test - Shaolun
-##
-#
+
+
+
+  # https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
+  shift-left:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform Scan
+        uses: ShiftLeftSecurity/scan-action@master
+        with:
+          type: "credscan,python"
+        env:
+          WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: reports
+
+  #https://github.com/renovatebot/github-action need to create token on github
+  # token key value (api key) needs to be put into environmental variable
+  # create github token for renovate
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v36.0.0
+        with:
+          renovate-version: 35.0.0
+          token: ${{ vars.RENOVATE_TOKEN }}
+
+
+
+
+
   snykScan:
     name: SCA Scan using Snyk
     runs-on: ubuntu-latest
