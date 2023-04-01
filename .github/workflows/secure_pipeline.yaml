@@ -136,7 +136,13 @@ jobs:
           token: ${{ vars.RENOVATE_TOKEN }}
 
 
-
+  fossa-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
+        with:
+          api-key: ${{secrets.fossaApiKey}}
 
 
   snykScan:
@@ -187,7 +193,7 @@ jobs:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -257,7 +263,7 @@ jobs:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
     steps:
       - uses: actions/checkout@v3
 
@@ -317,7 +323,7 @@ jobs:
 
   deploy-to-google-cloud:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
     name: Setup Gcloud Account
     runs-on: ubuntu-latest
     env:
