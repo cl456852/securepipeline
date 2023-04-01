@@ -23,7 +23,6 @@ jobs:
     name: Inspect - Using Sonar
     runs-on: ubuntu-latest
 #   needs: [ test ]
-
     steps:
       - uses: actions/checkout@v3
         with:
