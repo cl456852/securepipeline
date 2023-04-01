@@ -17,7 +17,6 @@ env:
   # https://app2727.azurewebsites.net/jpetstore/
 jobs:
 
-
  sonar:
    name: Inspect - Using Sonar
    runs-on: ubuntu-latest
