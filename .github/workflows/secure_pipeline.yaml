@@ -46,7 +46,7 @@ jobs:
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   #       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cl456852_securepipeline -Dmaven.test.skip=true
 
-  gitleaks:
+  Gitleaks:
     name: Secret Scan using Gitleaks
     runs-on: ubuntu-latest
 
@@ -106,7 +106,7 @@ jobs:
 
 
   # https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
-  shift-left:
+  Shift-left:
     runs-on: ubuntu-latest
     steps:
       - name: Perform Scan
@@ -124,7 +124,7 @@ jobs:
   #https://github.com/renovatebot/github-action need to create token on github
   # token key value (api key) needs to be put into environmental variable
   # create github token for renovate
-  renovate:
+  Renovate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -136,7 +136,7 @@ jobs:
           token: ${{ vars.RENOVATE_TOKEN }}
 
 
-  fossa-scan:
+  Fossa:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -159,7 +159,7 @@ jobs:
           head: HEAD
           extra_args: --debug --only-verified
 
-  snykScan:
+  SnykScan:
     name: SCA Scan using Snyk
     runs-on: ubuntu-latest
 
@@ -181,7 +181,7 @@ jobs:
         with:
           sarif_file: snyk.sarif
 
-  semgrep:
+  Semgrep:
     permissions: write-all
     name: SAST Scan using Semgrep
     runs-on: ubuntu-latest
@@ -202,7 +202,7 @@ jobs:
           sarif_file: semgrep.sarif
         if: always()
 
-  deploy-to-aws:
+  Deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
@@ -273,7 +273,7 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
-  build-and-push-to-ghcr:
+  Build-and-push-to-ghcr:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
@@ -314,7 +314,7 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
           
-  deploy-to-azure-web-app:
+  Deploy-to-azure-web-app:
     runs-on: ubuntu-latest
     name: Deploy container to Azure Web App
     needs: build-and-push-to-ghcr
@@ -335,7 +335,7 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
 
-  deploy-to-google-cloud:
+  Deploy-to-google-cloud:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
     needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left, TruffleHog]
     name: Setup Gcloud Account
@@ -382,7 +382,7 @@ jobs:
         run: gcloud run deploy ${{ vars.GCP_PROJECT_ID }} --image $IMAGE_NAME --region us-central1 --platform managed
 
 
-  zap_scan:
+  Zap-scan:
     runs-on: ubuntu-latest
     name: DAST Scan using ZAP
     if: ${{ always() }}
@@ -402,7 +402,7 @@ jobs:
           cmd_options: '-a'
 
 
-  nuclei-scan:
+  Nuclei-scan:
     name: DAST Scan using Nuclei
     needs: [zap_scan]
     runs-on: ubuntu-latest
