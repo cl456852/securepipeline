@@ -404,7 +404,7 @@ jobs:
 
   Nuclei-scan:
     name: DAST Scan using Nuclei
-    needs: [zap_scan]
+    needs: [Zap_scan]
     runs-on: ubuntu-latest
     # needs: [upload_file]
     steps:
