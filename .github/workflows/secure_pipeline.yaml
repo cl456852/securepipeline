@@ -143,7 +143,21 @@ jobs:
       - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
         with:
           api-key: ${{secrets.fossaApiKey}}
-
+          
+  TruffleHog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
 
   snykScan:
     name: SCA Scan using Snyk
@@ -193,7 +207,7 @@ jobs:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate, shift-left, TruffleHog]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -263,7 +277,7 @@ jobs:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left, TruffleHog]
     steps:
       - uses: actions/checkout@v3
 
@@ -323,7 +337,7 @@ jobs:
 
   deploy-to-google-cloud:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
-    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left]
+    needs: [snykScan,gitleaks,GitGuardian,CodeQL-Build,semgrep, fossa-scan, renovate,shift-left, TruffleHog]
     name: Setup Gcloud Account
     runs-on: ubuntu-latest
     env:
