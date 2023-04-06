@@ -401,7 +401,6 @@ jobs:
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
 
-
   Nuclei-scan:
     name: DAST Scan using Nuclei
     needs: [Zap-scan]
@@ -439,3 +438,4 @@ jobs:
         with:
           name: nuclei.log
           path: nuclei.log
+
