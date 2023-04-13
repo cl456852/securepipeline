@@ -1,4 +1,4 @@
-MyBatis JPetStore
+Secure Flow
 =================
 
 [![Java CI](https://github.com/mybatis/jpetstore-6/actions/workflows/ci.yaml/badge.svg)](https://github.com/mybatis/jpetstore-6/actions/workflows/ci.yaml)
@@ -6,79 +6,68 @@ MyBatis JPetStore
 [![Coverage Status](https://coveralls.io/repos/github/mybatis/jpetstore-6/badge.svg?branch=master)](https://coveralls.io/github/mybatis/jpetstore-6?branch=master)
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-![mybatis-jpetstore](https://mybatis.org/images/mybatis-logo.png)
 
-JPetStore 6 is a full web application built on top of MyBatis 3, Spring 5 and Stripes.
+Secure Flow is a GitHub Action pipeline with security features for Maven projects. It uses varieties of security tools to eliminate vulnerabilities happens in the development process, bringing developers a clear view of the quality of the project.
 
-Essentials
+
+Structure
 ----------
+![Secure Flow](https://github.com/cl456852/secPipeline/blob/main/img/structure.png?raw=true)
 
-* [See the docs](http://www.mybatis.org/jpetstore-6)
-
-## Other versions that you may want to know about
-
-- JPetstore on top of Spring, Spring MVC, MyBatis 3, and Spring Security https://github.com/making/spring-jpetstore
-- JPetstore with Vaadin and Spring Boot with Java Config https://github.com/igor-baiborodine/jpetstore-6-vaadin-spring-boot
-- JPetstore on MyBatis Spring Boot Starter https://github.com/kazuki43zoo/mybatis-spring-boot-jpetstore
-
-## Run on Application Server
-Running JPetStore sample under Tomcat (using the [cargo-maven2-plugin](https://codehaus-cargo.github.io/cargo/Maven2+plugin.html)).
-
-- Clone this repository
-
-  ```
-  $ git clone https://github.com/mybatis/jpetstore-6.git
-  ```
-
-- Build war file
-
-  ```
-  $ cd jpetstore-6
-  $ ./mvnw clean package
-  ```
-
-- Startup the Tomcat server and deploy web application
-
-  ```
-  $ ./mvnw cargo:run -P tomcat90
-  ```
-
-  > Note:
-  >
-  > We provide maven profiles per application server as follow:
-  >
-  > | Profile        | Description |
+## Modules
+>
+>
+> | Name        | Description |
   > | -------------- | ----------- |
-  > | tomcat90       | Running under the Tomcat 9.0 |
-  > | tomcat85       | Running under the Tomcat 8.5 |
-  > | tomee80        | Running under the TomEE 8.0(Java EE 8) |
-  > | tomee71        | Running under the TomEE 7.1(Java EE 7) |
-  > | wildfly26      | Running under the WildFly 26(Java EE 8) |
-  > | wildfly13      | Running under the WildFly 13(Java EE 7) |
-  > | liberty-ee8    | Running under the WebSphere Liberty(Java EE 8) |
-  > | liberty-ee7    | Running under the WebSphere Liberty(Java EE 7) |
-  > | jetty          | Running under the Jetty 9 |
-  > | glassfish5     | Running under the GlassFish 5(Java EE 8) |
-  > | glassfish4     | Running under the GlassFish 4(Java EE 7) |
-  > | resin          | Running under the Resin 4 |
+> | Gitleaks    | Gitleaks is a SAST tool for detecting and preventing hardcoded secrets like passwords, api keys, and tokens in git repos. |
+> | GitGuardian    | GitGuardian is a secret scanning tool for scanning your source code to detect api keys, passwords, certificates, encryption keys and other sensitive data in real-time. |
+> | CodeQL           | Discover vulnerabilities across a codebase with CodeQL, our industry-leading semantic code analysis engine.|
+> | Semgrep          | A fast, open-source, static analysis engine for finding bugs, detecting vulnerabilities in third-party dependencies, and enforcing code standards.|
+> | Sonar     | Enable your team to deliver clean code consistently and efficiently with a tool that easily integrates into the cloud DevOps platforms and extend your CI/CD workflow.|
+> | Snyk     | Find and automatically fix vulnerabilities in your code, open source dependencies, containers, and infrastructure as code.|
+> | Create Image   | Create a docker image containing the project |
+> | Trivy   | Trivy (tri pronounced like trigger, vy pronounced like envy) is a comprehensive security scanner. |
+> | Deploy| Upload the image to ECR, and deploy it to ECS|
+> | ZAP | Web app vulnerbility |
+> | Nuclei       | Nuclei is used to send requests across targets based on a template, leading to zero false positives and providing fast scanning on a large number of hosts. |
 
-- Run application in browser http://localhost:8080/jpetstore/ 
-- Press Ctrl-C to stop the server.
 
-## Run on Docker
-```
-docker build . -t jpetstore
-docker run -p 8080:8080 jpetstore
-```
-or with Docker Compose:
-```
-docker compose up -d
-```
+## How to Use
 
-## Try integration tests
+### Config
 
-Perform integration tests for screen transition.
+#### SONAR
+- secrets.SONAR_TOKEN
+- Dsonar.projectKey
 
-```
-$ ./mvnw clean verify -P tomcat90
-```
+#### Gitleaks
+
+#### GitGuardian
+- secrets.GITGUARDIAN_API_KEY
+
+#### Semgrep
+
+#### CodeQL
+
+#### snykScan
+- secrets.SNYK_TOKEN
+
+#### deploy
+- secrets.AWS_ACCESS_KEY_ID
+- secrets.AWS_SECRET_ACCESS_KEY
+- env.AWS_REGION
+- env.ECS_SERVICE
+- env.ECS_CLUSTER
+- env.ECS_TASK_DEFINITION //aws/task_definition.json
+- evn.CONTAINER_NAME
+
+### File
+- AWS Definition for deployment  
+  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html  
+  https://github.com/cl456852/jpetstore-6/blob/master/aws/task_definition.json
+- Docker File for creating docker image  
+  https://github.com/cl456852/jpetstore-6/blob/master/Dockerfile
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
