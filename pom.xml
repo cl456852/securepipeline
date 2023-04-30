@@ -330,7 +330,7 @@
 
     <!-- Reproducible Builds -->
     <project.build.outputTimestamp>1670877034</project.build.outputTimestamp>
-    <sonar.organization>cl456852</sonar.organization>
+    <sonar.organization>securepipeline</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
 
