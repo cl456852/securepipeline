@@ -17,7 +17,7 @@ env:
   TARGET: https://app2727.azurewebsites.net/jpetstore/
 jobs:
   Sonar:
-    name: Inspect - Using Sonar
+    name: SAST Scan using Sonar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -46,27 +46,34 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cl456852_securepipeline -Dmaven.test.skip=true
 
-  Gitleaks:
-    name: Secret Scan using Gitleaks
+  Semgrep:
+    name: SAST Scan using Semgrep
+    permissions: write-all
     runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+
+    if: (github.actor != 'dependabot[bot]')
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - run: semgrep ci --sarif --output=semgrep.sarif
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           SEMGREP_RULES: p/default
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
 
-#CodeQL test - Shaolun
   CodeQL-Build:
+    name: SAST Scan using CodeQL
     runs-on: ubuntu-latest
     permissions:
-
       security-events: write
-
       actions: read
       contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -82,31 +89,8 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-#GitGuardian Test - Shaolun
-  GitGuardian:
-      name: GitGuardian scan
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0 # fetch all history so multiple commits can be scanned
-        - name: GitGuardian scan
-          uses: GitGuardian/ggshield-action@master
-          with:
-            args: -v --all-policies
-          env:
-            GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-            GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
-            GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-            GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-            GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-
-
-
-
-  # https://github.com/ShiftLeftSecurity/scan-action/blob/master/README.md
   Shift-left:
+    name: SAST Scan using Shift-left
     runs-on: ubuntu-latest
     steps:
       - name: Perform Scan
@@ -120,44 +104,6 @@ jobs:
         with:
           name: reports
           path: reports
-
-  #https://github.com/renovatebot/github-action need to create token on github
-  # token key value (api key) needs to be put into environmental variable
-  # create github token for renovate
-  Renovate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
-      - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v36.0.0
-        with:
-          renovate-version: 35.0.0
-          token: ${{ vars.RENOVATE_TOKEN }}
-
-
-  Fossa:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
-        with:
-          api-key: ${{secrets.fossaApiKey}}
-          
-  TruffleHog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --debug --only-verified
 
   SnykScan:
     name: SCA Scan using Snyk
@@ -181,26 +127,73 @@ jobs:
         with:
           sarif_file: snyk.sarif
 
-  Semgrep:
-    permissions: write-all
-    name: SAST Scan using Semgrep
+  Gitleaks:
+    name: Secret Scan using Gitleaks
     runs-on: ubuntu-latest
-
-    container:
-      image: returntocorp/semgrep
-
-    if: (github.actor != 'dependabot[bot]')
 
     steps:
       - uses: actions/checkout@v3
-      - run: semgrep ci --sarif --output=semgrep.sarif
-        env:
-           SEMGREP_RULES: p/default
-      - name: Upload SARIF file for GitHub Advanced Security Dashboard
-        uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: semgrep.sarif
-        if: always()
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  GitGuardian:
+    name: Secret Scan using GitGuardian
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # fetch all history so multiple commits can be scanned
+      - name: GitGuardian scan
+        uses: GitGuardian/ggshield-action@master
+        with:
+          args: -v --all-policies
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+          
+  TruffleHog:
+    name: Secret Scan using TruffleHog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  Renovate:
+    name: Dependency Scan using Renovate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v36.0.0
+        with:
+          renovate-version: 35.0.0
+          token: ${{ vars.RENOVATE_TOKEN }}
+
+  Fossa:
+    name: Dependency Scan using Fossa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
+        with:
+          api-key: ${{secrets.fossaApiKey}}
 
   Deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
