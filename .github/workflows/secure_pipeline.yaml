@@ -10,11 +10,10 @@ env:
   ECS_TASK_DEFINITION: aws/task_definition.json # set this to the path to your Amazon ECS task definition
   # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: sample-app           # set this to the name of the container in the
-  AZURE_WEBAPP_NAME: app2727
-  DEPLOYMENT_PLATFORM: aws # 1 for AWS, 2 for Azure, 3 for Google Cloud
+  AZURE_WEBAPP_NAME: devsecops-javademo
   #TARGET: https://securepipeline-ul7wfbu6fa-uc.a.run.app/jpetstore
   #TARGET: http://ecsloadbalancer-1835225366.us-west-2.elb.amazonaws.com/jpetstore
-  TARGET: https://app2727.azurewebsites.net/jpetstore/
+  TARGET: https://devsecops-javademo.azurewebsites.net/jpetstore/
 jobs:
   Sonar:
     name: SAST Scan using Sonar
