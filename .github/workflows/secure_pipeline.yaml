@@ -89,7 +89,7 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   Shift-left:
-    name: SAST Scan using Shift-left
+    name: SCA Scan using Shift-left
     runs-on: ubuntu-latest
     steps:
       - name: Perform Scan
@@ -125,6 +125,15 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk.sarif
+
+  Fossa:
+    name: SCA Scan using Fossa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
+        with:
+          api-key: ${{secrets.fossaApiKey}}
 
   Gitleaks:
     name: Secret Scan using Gitleaks
@@ -185,21 +194,12 @@ jobs:
           renovate-version: 35.0.0
           token: ${{ vars.RENOVATE_TOKEN }}
 
-  Fossa:
-    name: Dependency Scan using Fossa
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: fossas/fossa-action@main # Use a specific version if locking is preferred
-        with:
-          api-key: ${{secrets.fossaApiKey}}
-
   Deploy-to-aws:
     name: Deploy to AWS & Docker Scan using Trivy
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'aws'}}  # AWS
     runs-on: ubuntu-latest
     environment: production
-    needs: [SnykScan,Gitleaks,GitGuardian,CodeQL-Build,Semgrep, Fossa, Renovate, Shift-left, TruffleHog]
+    needs: [SnykScan, Gitleaks, GitGuardian, CodeQL-Build, Semgrep, Fossa, Renovate, Shift-left, TruffleHog, Sonar]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -269,7 +269,7 @@ jobs:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'azure'}}  # Azure
     runs-on: ubuntu-latest
     name: Build and push docker image to ghcr
-    needs: [SnykScan,Gitleaks,GitGuardian,CodeQL-Build,Semgrep, Fossa, Renovate, Shift-left, TruffleHog]
+    needs: [SnykScan, Gitleaks, GitGuardian, CodeQL-Build, Semgrep, Fossa, Renovate, Shift-left, TruffleHog, Sonar]
     steps:
       - uses: actions/checkout@v3
 
@@ -321,7 +321,7 @@ jobs:
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
+        uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
@@ -329,7 +329,7 @@ jobs:
 
   Deploy-to-google-cloud:
     if: ${{ vars.DEPLOYMENT_PLATFORM == 'gc'}}
-    needs: [SnykScan,Gitleaks,GitGuardian,CodeQL-Build,Semgrep, Fossa, Renovate, Shift-left, TruffleHog]
+    needs: [SnykScan, Gitleaks, GitGuardian, CodeQL-Build, Semgrep, Fossa, Renovate, Shift-left, TruffleHog, Sonar]
     name: Setup Gcloud Account
     runs-on: ubuntu-latest
     env:
@@ -376,7 +376,7 @@ jobs:
 
   Zap-scan:
     runs-on: ubuntu-latest
-    name: DAST Scan using ZAP
+    name: DAST Scan using OWASP ZAP
     if: ${{ always() }}
     needs: [deploy-to-aws, deploy-to-azure-web-app, deploy-to-google-cloud]
     steps:
@@ -430,4 +430,3 @@ jobs:
         with:
           name: nuclei.log
           path: nuclei.log
-
